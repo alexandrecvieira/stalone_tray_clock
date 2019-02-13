@@ -17,9 +17,9 @@ def day_of_week(date):
     dayNumber=date.weekday()
     return days[dayNumber]
 
-def month(date):
-    months=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]
-    monthNumber=date.month
+def current_month(monthNumber):
+    months=["","Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]
+    # monthNumber=date.month
     return months[monthNumber]  
 
 def draw_window(label):
@@ -94,7 +94,7 @@ class ClockDay:
 class ClockMonth:
     def __init__(self):
         self.icon = gtk.StatusIcon()
-        self.month = month(datetime.date.today())
+        self.month = current_month(datetime.date.today().month)
         self.label = gtk.Label()
         self.label.set_justify(gtk.JUSTIFY_CENTER)
         self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
