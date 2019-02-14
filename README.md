@@ -4,7 +4,7 @@
 
 #### Requerimentos
 
-*stalonetray: sudo apt install stalonetray
+	sudo apt install stalonetray
 
 #### Instalação
 
@@ -21,4 +21,4 @@
 	font:Ubuntu Regular
 	fontweight:bold
 
-*icon_size deve ser o mesmo tamanho de ícone do stalonetray
+icon_size deve ser o mesmo tamanho de ícone do stalonetray
