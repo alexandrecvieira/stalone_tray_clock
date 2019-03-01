@@ -24,3 +24,10 @@ else
     echo "stalone_tray_clock foi configurado."
     echo "--------------------------------------"
 fi
+
+ls /usr/bin/stalone_tray_clock
+
+if [ $? -ne 0 ] ; then
+    cd /usr/bin/
+    sudo ln -s /opt/stalone_tray_clock/stalone_tray_clock.py stalone_tray_clock
+fi
