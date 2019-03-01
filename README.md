@@ -8,7 +8,7 @@ Ao clicar no relógio aparece o calendário
 
 #### Requerimentos
 
-	sudo apt install stalonetray
+	sudo apt install stalonetray python-gtk2 python-gobject python-configparser python-xlib
 
 #### Instalação
 
