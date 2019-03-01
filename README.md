@@ -20,5 +20,11 @@
 	fontsize:9.5
 	font:Ubuntu Regular
 	fontweight:bold
+	lang:pt
+	
+##### lang: 
 
-icon_size deve ser o mesmo tamanho de ícone do stalonetray
+ * **pt**: formata o relógio para português: Sex, 16 de Mar 16:30
+ * **en**: formata o relógio para o formato estrangeiro: Fri Mar 16, 04:30 PM 
+
+##### icon_size deve ser o mesmo tamanho de ícone do stalonetray

@@ -8,16 +8,22 @@ __license__ = "GNU GPL 2.0 or later"
 
 import pygtk
 pygtk.require('2.0')
-import gtk, gobject, datetime, calendar, configparser, io, os
+import gtk, gobject, datetime, calendar, configparser, io, os, locale
+from Xlib import display
 
 UPDATE_INTERVAL = 1  # in Seconds
 SHOW_CALENDAR = False
 
+def mousepos():
+    """mousepos() --> (x, y) get the mouse coordinates on the screen (linux, Xlib)."""
+    data = display.Display().screen().root.query_pointer()._data
+    return data["root_x"], data["root_y"]
+
 def day_of_week(date):
-    return calendar.day_abbr[date.weekday()]
+    return calendar.day_abbr[date.weekday()].capitalize()
 
 def current_month(monthNumber):
-    return calendar.month_abbr[monthNumber]  
+    return calendar.month_abbr[monthNumber].capitalize() 
 
 def draw_window(label):
     widget = gtk.Layout()
@@ -56,9 +62,13 @@ def draw_calendar_window():
     valign = gtk.Alignment(0, 1, 0, 0)
     vbox.pack_start(halign1)
     window = gtk.Window()
-    window.set_title("Calendário")
+    if LANG == 'pt':
+        window.set_title("Calendário")
+    else:
+        window.set_title("Calendar")
     window.set_size_request(200, 200)
-    window.set_position(gtk.WIN_POS_CENTER)
+    mouse = mousepos()
+    window.move(mouse[0] - 100, mouse[1] + 30)
     window.add(vbox)
     window.connect("destroy", set_show_calendar)
     window.show_all()
@@ -89,8 +99,12 @@ class ClockDayOfWeek:
         self.dayofweek = day_of_week(datetime.date.today())
         self.label = gtk.Label()
         self.label.set_justify(gtk.JUSTIFY_CENTER)
-        self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
-                              + '\' font=\'' + FONT + '\'>' + self.dayofweek + ', </span>')
+        if LANG == 'pt':
+            self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
+                                  + '\' font=\'' + FONT + '\'>' + self.dayofweek + ', </span>')
+        else:
+            self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
+                                  + '\' font=\'' + FONT + '\'>' + self.dayofweek + '</span>')
         self.label.connect( "size-allocate", cb_allocate )
         self.window = draw_window(self.label)
         self.window.connect("damage-event", self.draw_complete_event)
@@ -106,8 +120,12 @@ class ClockDay:
         self.now = datetime.datetime.now()
         self.label = gtk.Label()
         self.label.set_justify(gtk.JUSTIFY_CENTER)
-        self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
-                              + '\' font=\'' + FONT + '\'>' + str(self.now.day) + ' de</span>')
+        if LANG == 'pt':
+            self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
+                                  + '\' font=\'' + FONT + '\'>' + str(self.now.day) + ' de</span>')
+        else:
+            self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
+                                  + '\' font=\'' + FONT + '\'>' + str(self.now.day) + ', </span>')         
         self.label.connect( "size-allocate", cb_allocate )
         self.window = draw_window(self.label)
         self.window.connect("damage-event", self.draw_complete_event)
@@ -148,8 +166,36 @@ class ClockTime:
                    
     def update_clock(self):
         self.now = datetime.datetime.now()
+        if LANG == 'pt':
+            self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
+                                  + '\' font=\'' + FONT + '\'>' + self.now.strftime("%H:%M") + '</span>')
+        else:
+            self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
+                                  + '\' font=\'' + FONT + '\'>' + self.now.strftime("%I:%M") + '</span>')
+        self.label.connect( "size-allocate", cb_allocate )
+        self.window.present()
+        return True
+
+    def draw_complete_event(self, window, event):
+        self.icon.set_from_pixbuf(window.get_pixbuf())
+
+class ClockTimeAMPM:
+    def __init__(self):
+        self.icon = gtk.StatusIcon()
+        self.icon.connect( "activate", on_left_click )
+        self.label = gtk.Label()
+        self.label.set_markup('<span color="white">time</span>')
+        self.label.set_justify(gtk.JUSTIFY_CENTER)
+        self.window = draw_window(self.label)
+        self.window.connect("damage-event", self.draw_complete_event)
+        self.update_clock()
+        gobject.timeout_add(1000 * UPDATE_INTERVAL, self.update_clock)
+        self.now = None
+                   
+    def update_clock(self):
+        self.now = datetime.datetime.now()
         self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
-                              + '\' font=\'' + FONT + '\'>' + self.now.strftime("%H:%M") + '</span>')
+                              + '\' font=\'' + FONT + '\'>' + self.now.strftime("%p") + '</span>')
         self.label.connect( "size-allocate", cb_allocate )
         self.window.present()
         return True
@@ -176,6 +222,7 @@ if __name__ == "__main__":
         FONT = user_config_dir[4].split(':')[1]
         FONTWEIGHT = user_config_dir[5].split(':')[1] # One of 'ultralight', 'light', 'normal', 'bold',
                                                       # 'ultrabold', 'heavy', or a numeric weight
+        LANG = user_config_dir[6].split(':')[1]
     except IOError:
         ICON_SIZE = 32
         BGCOLOR = '#111'
@@ -184,15 +231,27 @@ if __name__ == "__main__":
         FONT ='Ubuntu Regular'
         FONTWEIGHT = 'bold' # One of 'ultralight', 'light', 'normal', 'bold',
                             # 'ultrabold', 'heavy', or a numeric weight
+        LANG = 'pt' # pt or en
         save_config()
 
     FONT = FONT + ' ' + FONTSIZE
     
     paddingleft = ClockPadding()
-    appdayofweek = ClockDayOfWeek()
-    appday = ClockDay()
-    appmonth = ClockMonth()
+    
+    if LANG == 'pt':
+        appdayofweek = ClockDayOfWeek()
+        appday = ClockDay()
+        appmonth = ClockMonth()
+    else:
+        appdayofweek = ClockDayOfWeek()
+        appmonth = ClockMonth()
+        appday = ClockDay()
+
     apptime = ClockTime()
+
+    if LANG != 'pt':
+        apptimeampm = ClockTimeAMPM()
+        
     paddingright = ClockPadding()
     
     gtk.main()
