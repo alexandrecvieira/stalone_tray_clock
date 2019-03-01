@@ -2,6 +2,10 @@
 
 ![stalone_tray_clock](stalone_tray_clock.png)
 
+Ao clicar no relógio aparece o calendário
+
+![stalone_tray_clock_calendar](http://alexandrecvieira.droppages.com/images/stalonetray_clock_calendar.png)
+
 #### Requerimentos
 
 	sudo apt install stalonetray
