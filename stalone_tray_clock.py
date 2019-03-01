@@ -8,18 +8,16 @@ __license__ = "GNU GPL 2.0 or later"
 
 import pygtk
 pygtk.require('2.0')
-import gtk, gobject, datetime, configparser, io, os
+import gtk, gobject, datetime, calendar, configparser, io, os
 
 UPDATE_INTERVAL = 1  # in Seconds
+SHOW_CALENDAR = False
 
 def day_of_week(date):
-    days=["Seg","Ter","Qua","Qui","Sex","Sab","Dom"]
-    dayNumber=date.weekday()
-    return days[dayNumber]
+    return calendar.day_abbr[date.weekday()]
 
 def current_month(monthNumber):
-    months=["","Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]
-    return months[monthNumber]  
+    return calendar.month_abbr[monthNumber]  
 
 def draw_window(label):
     widget = gtk.Layout()
@@ -47,6 +45,28 @@ def draw_padding_window():
     widget.modify_bg(gtk.STATE_NORMAL, col)
     return window
 
+def draw_calendar_window():
+    global SHOW_CALENDAR
+    SHOW_CALENDAR = True
+    vbox = gtk.VBox(False, 5)
+    cal = gtk.Calendar()
+    cal.set_display_options(gtk.CALENDAR_SHOW_HEADING)
+    halign1 = gtk.Alignment(0.5, 0.5, 0, 0)
+    halign1.add(cal)
+    valign = gtk.Alignment(0, 1, 0, 0)
+    vbox.pack_start(halign1)
+    window = gtk.Window()
+    window.set_title("Calendário")
+    window.set_size_request(200, 200)
+    window.set_position(gtk.WIN_POS_CENTER)
+    window.add(vbox)
+    window.connect("destroy", set_show_calendar)
+    window.show_all()
+
+def set_show_calendar(gtkobject, data=None):
+    global SHOW_CALENDAR
+    SHOW_CALENDAR = False
+    
 def save_config():
     with open(os.path.expanduser('~/.stalone_tray_clockrc'), 'w') as f:
         f.write('%s\n%s\n%s\n%s\n%s\n%s' % ('icon_size' + ':'
@@ -57,9 +77,15 @@ def save_config():
 def cb_allocate(label, allocation):
     label.set_size_request( ICON_SIZE, -1 )
 
+def on_left_click(event):
+    global SHOW_CALENDAR
+    if not SHOW_CALENDAR:
+        draw_calendar_window()
+    
 class ClockDayOfWeek:
     def __init__(self):
         self.icon = gtk.StatusIcon()
+        self.icon.connect( "activate", on_left_click )
         self.dayofweek = day_of_week(datetime.date.today())
         self.label = gtk.Label()
         self.label.set_justify(gtk.JUSTIFY_CENTER)
@@ -76,6 +102,7 @@ class ClockDayOfWeek:
 class ClockDay:
     def __init__(self):
         self.icon = gtk.StatusIcon()
+        self.icon.connect( "activate", on_left_click )
         self.now = datetime.datetime.now()
         self.label = gtk.Label()
         self.label.set_justify(gtk.JUSTIFY_CENTER)
@@ -92,6 +119,7 @@ class ClockDay:
 class ClockMonth:
     def __init__(self):
         self.icon = gtk.StatusIcon()
+        self.icon.connect( "activate", on_left_click )
         self.month = current_month(datetime.date.today().month)
         self.label = gtk.Label()
         self.label.set_justify(gtk.JUSTIFY_CENTER)
@@ -108,6 +136,7 @@ class ClockMonth:
 class ClockTime:
     def __init__(self):
         self.icon = gtk.StatusIcon()
+        self.icon.connect( "activate", on_left_click )
         self.label = gtk.Label()
         self.label.set_markup('<span color="white">time</span>')
         self.label.set_justify(gtk.JUSTIFY_CENTER)
@@ -136,7 +165,7 @@ class ClockPadding:
 
     def draw_complete_event(self, window, event):
         self.icon.set_from_pixbuf(window.get_pixbuf())
-        
+       
 if __name__ == "__main__":
     try:
         user_config_dir = open(os.path.expanduser('~/.stalone_tray_clockrc'), 'r').read().split('\n')
@@ -165,5 +194,5 @@ if __name__ == "__main__":
     appmonth = ClockMonth()
     apptime = ClockTime()
     paddingright = ClockPadding()
-
+    
     gtk.main()
