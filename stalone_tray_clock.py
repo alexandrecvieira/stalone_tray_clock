@@ -19,7 +19,6 @@ def day_of_week(date):
 
 def current_month(monthNumber):
     months=["","Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]
-    # monthNumber=date.month
     return months[monthNumber]  
 
 def draw_window(label):
@@ -49,7 +48,6 @@ def draw_padding_window():
     return window
 
 def save_config():
-    s = ''
     with open(os.path.expanduser('~/.stalone_tray_clockrc'), 'w') as f:
         f.write('%s\n%s\n%s\n%s\n%s\n%s' % ('icon_size' + ':'
                                                 + str(ICON_SIZE), 'bgcolor' + ':' + BGCOLOR, 'fontcolor' + ':'
@@ -141,15 +139,15 @@ class ClockPadding:
         
 if __name__ == "__main__":
     try:
-        user_config_dir = open(os.path.expanduser('~/.stalone_tray_clockrc')).read().split('\n')
-        ICON_SIZE = int(user_config_dir[1].split(':')[1])
-        BGCOLOR = user_config_dir[2].split(':')[1]
-        FONTCOLOR = user_config_dir[3].split(':')[1]
-        FONTSIZE = user_config_dir[4].split(':')[1]
-        FONT = user_config_dir[5].split(':')[1]
-        FONTWEIGHT = user_config_dir[6].split(':')[1] # One of 'ultralight', 'light', 'normal', 'bold',
+        user_config_dir = open(os.path.expanduser('~/.stalone_tray_clockrc'), 'r').read().split('\n')
+        ICON_SIZE = int(user_config_dir[0].split(':')[1])
+        BGCOLOR = user_config_dir[1].split(':')[1]
+        FONTCOLOR = user_config_dir[2].split(':')[1]
+        FONTSIZE = user_config_dir[3].split(':')[1]
+        FONT = user_config_dir[4].split(':')[1]
+        FONTWEIGHT = user_config_dir[5].split(':')[1] # One of 'ultralight', 'light', 'normal', 'bold',
                                                       # 'ultrabold', 'heavy', or a numeric weight
-    except:
+    except IOError:
         ICON_SIZE = 32
         BGCOLOR = '#111'
         FONTCOLOR = 'white'
@@ -157,8 +155,7 @@ if __name__ == "__main__":
         FONT ='Ubuntu Regular'
         FONTWEIGHT = 'bold' # One of 'ultralight', 'light', 'normal', 'bold',
                             # 'ultrabold', 'heavy', or a numeric weight
-
-    save_config()
+        save_config()
 
     FONT = FONT + ' ' + FONTSIZE
     
