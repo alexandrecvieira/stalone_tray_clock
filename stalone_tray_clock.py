@@ -27,7 +27,8 @@ def current_month(monthNumber):
 
 def draw_window(label):
     widget = gtk.Layout()
-    widget.put(label,0,ICON_SIZE / 4)
+    if label != None:
+        widget.put(label,0,ICON_SIZE / 4)
     widget.show()
     window = gtk.OffscreenWindow()
     window.set_default_size(ICON_SIZE, ICON_SIZE)
@@ -35,19 +36,8 @@ def draw_window(label):
     window.add(widget)
     window.show_all()
     col = gtk.gdk.Color(BGCOLOR)
-    widget.modify_bg(gtk.STATE_NORMAL, col)
-    return window
-
-def draw_padding_window():
-    widget = gtk.Layout()
-    widget.show()
-    window = gtk.OffscreenWindow()
-    window.set_default_size(ICON_SIZE, ICON_SIZE)
-    window.set_opacity(0)
-    window.add(widget)
-    window.show_all()
-    col = gtk.gdk.Color(BGCOLOR)
-    window.present()
+    if label == None:
+        window.present()
     widget.modify_bg(gtk.STATE_NORMAL, col)
     return window
 
@@ -56,7 +46,7 @@ def draw_calendar_window():
     SHOW_CALENDAR = True
     vbox = gtk.VBox(False, 5)
     cal = gtk.Calendar()
-    cal.set_display_options(gtk.CALENDAR_SHOW_HEADING)
+    cal.set_display_options(gtk.CALENDAR_SHOW_HEADING | gtk.CALENDAR_SHOW_DAY_NAMES)
     halign1 = gtk.Alignment(0.5, 0.5, 0, 0)
     halign1.add(cal)
     valign = gtk.Alignment(0, 1, 0, 0)
@@ -66,7 +56,7 @@ def draw_calendar_window():
         window.set_title("Calendário")
     else:
         window.set_title("Calendar")
-    window.set_size_request(200, 200)
+    window.set_size_request(250, 200)
     window.set_icon(gtk.icon_theme_get_default().load_icon("calendar", 48, 0))
     mouse = mousepos()
     window.move(mouse[0] - 100, mouse[1] + 30)
@@ -207,7 +197,7 @@ class ClockTimeAMPM:
 class ClockPadding:
     def __init__(self):
         self.icon = gtk.StatusIcon()
-        window = draw_padding_window()
+        window = draw_window(None)
         window.connect("damage-event", self.draw_complete_event)
 
     def draw_complete_event(self, window, event):
