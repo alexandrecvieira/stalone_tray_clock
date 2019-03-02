@@ -67,6 +67,7 @@ def draw_calendar_window():
     else:
         window.set_title("Calendar")
     window.set_size_request(200, 200)
+    window.set_icon(gtk.icon_theme_get_default().load_icon("calendar", 48, 0))
     mouse = mousepos()
     window.move(mouse[0] - 100, mouse[1] + 30)
     window.add(vbox)
