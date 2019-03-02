@@ -1,5 +1,9 @@
 # Simples relógio para stalonetray/openbox
 
+Relógio muito simples feito apenas pra suprir a necessidade do usuário saber a hora e ter um calendário simples à disposição
+
+A instalação é muito simples também e exclusivamente para o Openbox puro
+
 ![stalone_tray_clock](stalone_tray_clock.png)
 
 Ao clicar no relógio aparece o calendário
