@@ -4,7 +4,7 @@
 
 Ao clicar no relógio aparece o calendário
 
-![stalone_tray_clock_calendar](http://alexandrecvieira.droppages.com/images/stalonetray_clock_calendar.png)
+![stalone_tray_clock_calendar](http://alexandrecvieira.droppages.com/images/stalonetray_clock_calendar1.png)
 
 #### Requerimentos
 
