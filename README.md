@@ -18,7 +18,9 @@ Ao clicar no relógio aparece o calendário
 
 	git clone https://github.com/alexandrecvieira/stalone_tray_clock.git
 	cd stalone_tray_clock
-	./install.sh
+	python setup.py build
+    python setup.py install --prefix=/usr
+	echo "stalone_tray_clock &" >> $HOME/.config/openbox/autostart
 	
 #### O arquivo de configuração: ~/.stalone_tray_clockrc é gerado automaticamente com as seguintes configurações padrão:
 
