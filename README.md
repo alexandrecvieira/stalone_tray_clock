@@ -2,8 +2,6 @@
 
 Relógio muito simples feito apenas pra suprir a necessidade do usuário saber a hora e ter um calendário simples à disposição
 
-A instalação é muito simples também e exclusivamente para o Openbox puro
-
 ![stalone_tray_clock](stalone_tray_clock.png)
 
 Ao clicar no relógio aparece o calendário
@@ -20,6 +18,8 @@ Ao clicar no relógio aparece o calendário
 	cd stalone_tray_clock
 	python setup.py build
     python setup.py install --prefix=/usr
+	
+	# Configurar para iniciar automaticamente no Openbox
 	echo "stalone_tray_clock &" >> $HOME/.config/openbox/autostart
 	
 #### O arquivo de configuração: ~/.stalone_tray_clockrc é gerado automaticamente com as seguintes configurações padrão:
