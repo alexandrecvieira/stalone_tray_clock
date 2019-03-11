@@ -14,6 +14,8 @@ from Xlib import display
 UPDATE_INTERVAL = 1  # in Seconds
 SHOW_CALENDAR = False
 
+calendar_window = None
+
 def mousepos():
     """mousepos() --> (x, y) get the mouse coordinates on the screen (linux, Xlib)."""
     data = display.Display().screen().root.query_pointer()._data
@@ -52,6 +54,7 @@ def draw_calendar_window():
     valign = gtk.Alignment(0, 1, 0, 0)
     vbox.pack_start(halign1)
     window = gtk.Window()
+    window.set_decorated(False)
     if LANG == 'pt':
         window.set_title("Calendário")
     else:
@@ -63,6 +66,7 @@ def draw_calendar_window():
     window.add(vbox)
     window.connect("destroy", set_show_calendar)
     window.show_all()
+    return window
 
 def set_show_calendar(gtkobject, data=None):
     global SHOW_CALENDAR
@@ -80,8 +84,11 @@ def cb_allocate(label, allocation):
 
 def on_left_click(event):
     global SHOW_CALENDAR
+    global calendar_window
     if not SHOW_CALENDAR:
-        draw_calendar_window()
+        calendar_window = draw_calendar_window()
+    else:
+        calendar_window.destroy()
     
 class ClockDayOfWeek:
     def __init__(self):
