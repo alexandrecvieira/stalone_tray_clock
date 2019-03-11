@@ -62,7 +62,7 @@ def draw_calendar_window():
     window.set_size_request(250, 200)
     window.set_icon(gtk.icon_theme_get_default().load_icon("calendar", 48, 0))
     mouse = mousepos()
-    window.move(mouse[0] - 100, mouse[1] + 30)
+    window.move(mouse[0] - 125, mouse[1] + 30)
     window.add(vbox)
     window.connect("destroy", set_show_calendar)
     window.connect("visibility-notify-event", calendar_frame_event)
