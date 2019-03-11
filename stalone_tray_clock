@@ -65,12 +65,17 @@ def draw_calendar_window():
     window.move(mouse[0] - 100, mouse[1] + 30)
     window.add(vbox)
     window.connect("destroy", set_show_calendar)
+    window.connect("visibility-notify-event", calendar_frame_event)
     window.show_all()
     return window
 
 def set_show_calendar(gtkobject, data=None):
     global SHOW_CALENDAR
     SHOW_CALENDAR = False
+
+def calendar_frame_event(window, event):
+    if event.state == gtk.gdk.VISIBILITY_PARTIAL or event.state == gtk.gdk.VISIBILITY_FULLY_OBSCURED:
+        window.destroy()
     
 def save_config():
     with open(os.path.expanduser('~/.stalone_tray_clockrc'), 'w') as f:
