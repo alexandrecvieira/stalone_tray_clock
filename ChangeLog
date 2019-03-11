@@ -1,4 +1,12 @@
 
+2019-03-11  Alexandre C Vieira <acamargo.vieira@gmail.com>
+
+	* stalone_tray_clock (draw_calendar_window): close calendar on visibility events(partial and fully obscured)
+
+2019-03-10  Alexandre C Vieira <acamargo.vieira@gmail.com>
+
+	* tirada decoração da janela do calendário e ocultando a janela ao clicar novamente no relógio
+
 2019-03-08  Alexandre C Vieira <acamargo.vieira@gmail.com>
 
 	* README Update
