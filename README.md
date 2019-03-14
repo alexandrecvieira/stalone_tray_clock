@@ -6,7 +6,7 @@ Relógio muito simples feito apenas pra suprir a necessidade do usuário saber a
 
 Ao clicar no relógio aparece o calendário
 
-![stalone_tray_clock_calendar](http://alexandrecvieira.droppages.com/images/stalonetray_clock_calendar1.png)
+![stalone_tray_clock_calendar](http://alexandrecvieira.droppages.com/images/stalonetray_clock_calendar2.png)
 
 #### Requerimentos
 
