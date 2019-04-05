@@ -1,51 +1,34 @@
 
+2019-04-05  Alexandre C Vieira <acamargo.vieira@gmail.com>
+
+	* stalone_tray_clock (set_update_date_interval): interval update
+	* Atualização do dia, dia da semana e mês na virada do dia(00:00)
+
 2019-03-11  Alexandre C Vieira <acamargo.vieira@gmail.com>
 
+	* stalone_tray_clock (draw_calendar_window): janela do calendário centralizada em relação ao ponteiro do mouse
 	* stalone_tray_clock (draw_calendar_window): close calendar on visibility events(partial and fully obscured)
 
 2019-03-10  Alexandre C Vieira <acamargo.vieira@gmail.com>
 
 	* tirada decoração da janela do calendário e ocultando a janela ao clicar novamente no relógio
 
-2019-03-08  Alexandre C Vieira <acamargo.vieira@gmail.com>
-
-	* README Update
-
-2019-03-07  Alexandre C Vieira <acamargo.vieira@gmail.com>
-
-	* README Update
-
 2019-03-05  Alexandre C Vieira <acamargo.vieira@gmail.com>
 
 	* setup.py
 
-2019-03-02  Alexandre C Vieira <acamargo.vieira@gmail.com>
-
-	* README Update
-
 2019-03-01  Alexandre C Vieira <acamargo.vieira@gmail.com>
 
-	* README Update
-	* README Update
-	* README Update
 	* nomes dos dias da semana no calendário
 	* ícone do calendário
-	* README Update
 	* Install script update
-	* README Update
 	* formato estrangeiro
 	* nomes dos dias e meses de acordo com locale, adicionado calendário
-	* README Update
 
 2019-02-28  Alexandre C Vieira <acamargo.vieira@gmail.com>
 
 	* Merge remote-tracking branch 'origin/master'
 	* solucionado bug ao carregar arquivo de configuração
-
-2019-02-14  Alexandre C Vieira <acamargo.vieira@gmail.com>
-
-	* README update
-	* README update
 
 2019-02-13  Alexandre C Vieira <acamargo.vieira@gmail.com>
 
