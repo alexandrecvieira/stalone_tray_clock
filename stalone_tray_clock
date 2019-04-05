@@ -12,6 +12,7 @@ import gtk, gobject, datetime, calendar, configparser, io, os, locale
 from Xlib import display
 
 UPDATE_INTERVAL = 1  # in Seconds
+UPDATE_DATE_INTERVAL = 1 # 1 to set type to int
 SHOW_CALENDAR = False
 
 calendar_window = None
@@ -99,9 +100,16 @@ class ClockDayOfWeek:
     def __init__(self):
         self.icon = gtk.StatusIcon()
         self.icon.connect( "activate", on_left_click )
-        self.dayofweek = day_of_week(datetime.date.today())
         self.label = gtk.Label()
         self.label.set_justify(gtk.JUSTIFY_CENTER)
+        self.window = draw_window(self.label)
+        self.window.connect("damage-event", self.draw_complete_event)
+        self.update_day_of_week()
+        global UPDATE_DATE_INTERVAL
+        gobject.timeout_add_seconds(UPDATE_DATE_INTERVAL, self.update_day_of_week)
+
+    def update_day_of_week(self):
+        self.dayofweek = day_of_week(datetime.date.today())
         if LANG == 'pt':
             self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
                                   + '\' font=\'' + FONT + '\'>' + self.dayofweek + ', </span>')
@@ -109,9 +117,8 @@ class ClockDayOfWeek:
             self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
                                   + '\' font=\'' + FONT + '\'>' + self.dayofweek + '</span>')
         self.label.connect( "size-allocate", cb_allocate )
-        self.window = draw_window(self.label)
-        self.window.connect("damage-event", self.draw_complete_event)
-        # self.window.present()
+        self.window.present()
+        return True
 
     def draw_complete_event(self, window, event):
         self.icon.set_from_pixbuf(window.get_pixbuf())
@@ -120,20 +127,26 @@ class ClockDay:
     def __init__(self):
         self.icon = gtk.StatusIcon()
         self.icon.connect( "activate", on_left_click )
-        self.now = datetime.datetime.now()
         self.label = gtk.Label()
         self.label.set_justify(gtk.JUSTIFY_CENTER)
+        self.window = draw_window(self.label)
+        self.window.connect("damage-event", self.draw_complete_event)
+        self.update_day()
+        global UPDATE_DATE_INTERVAL
+        gobject.timeout_add_seconds(UPDATE_DATE_INTERVAL, self.update_day)
+
+    def update_day(self):
+        self.now = datetime.datetime.now()
         if LANG == 'pt':
             self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
                                   + '\' font=\'' + FONT + '\'>' + str(self.now.day) + ' de</span>')
         else:
             self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
-                                  + '\' font=\'' + FONT + '\'>' + str(self.now.day) + ', </span>')         
+                                  + '\' font=\'' + FONT + '\'>' + str(self.now.day) + ', </span>')
         self.label.connect( "size-allocate", cb_allocate )
-        self.window = draw_window(self.label)
-        self.window.connect("damage-event", self.draw_complete_event)
-        # self.window.present()
-
+        self.window.present()
+        return True
+    
     def draw_complete_event(self, window, event):
         self.icon.set_from_pixbuf(window.get_pixbuf())
 
@@ -141,15 +154,21 @@ class ClockMonth:
     def __init__(self):
         self.icon = gtk.StatusIcon()
         self.icon.connect( "activate", on_left_click )
-        self.month = current_month(datetime.date.today().month)
         self.label = gtk.Label()
         self.label.set_justify(gtk.JUSTIFY_CENTER)
+        self.window = draw_window(self.label)
+        self.window.connect("damage-event", self.draw_complete_event)
+        self.update_month()
+        global UPDATE_DATE_INTERVAL
+        gobject.timeout_add_seconds(UPDATE_DATE_INTERVAL, self.update_month)
+
+    def update_month(self):
+        self.month = current_month(datetime.date.today().month)
         self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
                               + '\' font=\'' + FONT + '\'>' + self.month + '</span>')
         self.label.connect( "size-allocate", cb_allocate )
-        self.window = draw_window(self.label)
-        self.window.connect("damage-event", self.draw_complete_event)
         self.window.present()
+        return True
 
     def draw_complete_event(self, window, event):
         self.icon.set_from_pixbuf(window.get_pixbuf())
@@ -164,9 +183,8 @@ class ClockTime:
         self.window = draw_window(self.label)
         self.window.connect("damage-event", self.draw_complete_event)
         self.update_clock()
-        gobject.timeout_add(1000 * UPDATE_INTERVAL, self.update_clock)
-        self.now = None
-                   
+        gobject.timeout_add_seconds(UPDATE_INTERVAL, self.update_clock)
+                         
     def update_clock(self):
         self.now = datetime.datetime.now()
         if LANG == 'pt':
@@ -192,7 +210,7 @@ class ClockTimeAMPM:
         self.window = draw_window(self.label)
         self.window.connect("damage-event", self.draw_complete_event)
         self.update_clock()
-        gobject.timeout_add(1000 * UPDATE_INTERVAL, self.update_clock)
+        gobject.timeout_add_seconds(UPDATE_INTERVAL, self.update_clock)
         self.now = None
                    
     def update_clock(self):
@@ -256,5 +274,11 @@ if __name__ == "__main__":
         apptimeampm = ClockTimeAMPM()
         
     paddingright = ClockPadding()
+
+    now = datetime.datetime.now().strftime("%H:%M:%S")
+    midnight = '00:00:00'
+    FMT = '%H:%M:%S'
+    delta = datetime.datetime.strptime(midnight, FMT) - datetime.datetime.strptime(now, FMT)
+    UPDATE_DATE_INTERVAL = delta.seconds
     
     gtk.main()
