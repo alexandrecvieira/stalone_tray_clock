@@ -1,4 +1,8 @@
 
+2019-04-15  Alexandre C Vieira <acamargo.vieira@gmail.com>
+
+	* Mudado de gobject para thread  e resolvido bug na contagem dos segundos para as atualizações do dia e mes
+
 2019-04-05  Alexandre C Vieira <acamargo.vieira@gmail.com>
 
 	* stalone_tray_clock (set_update_date_interval): interval update
