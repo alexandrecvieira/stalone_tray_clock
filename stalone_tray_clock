@@ -8,13 +8,11 @@ __license__ = "GNU GPL 2.0 or later"
 
 import pygtk
 pygtk.require('2.0')
-import gtk, gobject, datetime, calendar, configparser, io, os, locale
+import gtk, gobject, datetime, calendar, configparser, io, os, locale, threading, time
 from Xlib import display
 
 UPDATE_INTERVAL = 1  # in Seconds
-UPDATE_DATE_INTERVAL = 1 # 1 to set type to int
 SHOW_CALENDAR = False
-
 calendar_window = None
 
 def set_update_date_interval():
@@ -22,7 +20,7 @@ def set_update_date_interval():
     midnight = '00:00:00'
     FMT = '%H:%M:%S'
     delta = datetime.datetime.strptime(midnight, FMT) - datetime.datetime.strptime(now, FMT)
-    UPDATE_DATE_INTERVAL = delta.seconds
+    return delta.seconds
 
 def mousepos():
     """mousepos() --> (x, y) get the mouse coordinates on the screen (linux, Xlib)."""
@@ -113,8 +111,7 @@ class ClockDayOfWeek:
         self.window.connect("damage-event", self.draw_complete_event)
         self.update_day_of_week()
         global UPDATE_DATE_INTERVAL
-        gobject.timeout_add_seconds(UPDATE_DATE_INTERVAL, self.update_day_of_week)
-
+         
     def update_day_of_week(self):
         self.dayofweek = day_of_week(datetime.date.today())
         if LANG == 'pt':
@@ -125,7 +122,7 @@ class ClockDayOfWeek:
                                   + '\' font=\'' + FONT + '\'>' + self.dayofweek + '</span>')
         self.label.connect( "size-allocate", cb_allocate )
         self.window.present()
-        return True
+        threading.Timer(UPDATE_DATE_INTERVAL, self.update_day_of_week).start()
 
     def draw_complete_event(self, window, event):
         self.icon.set_from_pixbuf(window.get_pixbuf())
@@ -140,10 +137,9 @@ class ClockDay:
         self.window.connect("damage-event", self.draw_complete_event)
         self.update_day()
         global UPDATE_DATE_INTERVAL
-        gobject.timeout_add_seconds(UPDATE_DATE_INTERVAL, self.update_day)
-
+        
     def update_day(self):
-        set_update_date_interval()
+        UPDATE_DATE_INTERVAL = set_update_date_interval()
         self.now = datetime.datetime.now()
         if LANG == 'pt':
             self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
@@ -153,7 +149,7 @@ class ClockDay:
                                   + '\' font=\'' + FONT + '\'>' + str(self.now.day) + ', </span>')
         self.label.connect( "size-allocate", cb_allocate )
         self.window.present()
-        return True
+        threading.Timer(UPDATE_DATE_INTERVAL, self.update_day).start()
     
     def draw_complete_event(self, window, event):
         self.icon.set_from_pixbuf(window.get_pixbuf())
@@ -168,15 +164,14 @@ class ClockMonth:
         self.window.connect("damage-event", self.draw_complete_event)
         self.update_month()
         global UPDATE_DATE_INTERVAL
-        gobject.timeout_add_seconds(UPDATE_DATE_INTERVAL, self.update_month)
-
+       
     def update_month(self):
         self.month = current_month(datetime.date.today().month)
         self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
                               + '\' font=\'' + FONT + '\'>' + self.month + '</span>')
         self.label.connect( "size-allocate", cb_allocate )
         self.window.present()
-        return True
+        threading.Timer(UPDATE_DATE_INTERVAL, self.update_month).start()
 
     def draw_complete_event(self, window, event):
         self.icon.set_from_pixbuf(window.get_pixbuf())
@@ -191,7 +186,7 @@ class ClockTime:
         self.window = draw_window(self.label)
         self.window.connect("damage-event", self.draw_complete_event)
         self.update_clock()
-        gobject.timeout_add_seconds(UPDATE_INTERVAL, self.update_clock)
+        global UPDATE_INTERVAL
                          
     def update_clock(self):
         self.now = datetime.datetime.now()
@@ -203,7 +198,7 @@ class ClockTime:
                                   + '\' font=\'' + FONT + '\'>' + self.now.strftime("%I:%M") + '</span>')
         self.label.connect( "size-allocate", cb_allocate )
         self.window.present()
-        return True
+        threading.Timer(UPDATE_INTERVAL, self.update_clock).start()
 
     def draw_complete_event(self, window, event):
         self.icon.set_from_pixbuf(window.get_pixbuf())
@@ -218,7 +213,7 @@ class ClockTimeAMPM:
         self.window = draw_window(self.label)
         self.window.connect("damage-event", self.draw_complete_event)
         self.update_clock()
-        gobject.timeout_add_seconds(UPDATE_INTERVAL, self.update_clock)
+        global UPDATE_INTERVAL
         self.now = None
                    
     def update_clock(self):
@@ -227,7 +222,7 @@ class ClockTimeAMPM:
                               + '\' font=\'' + FONT + '\'>' + self.now.strftime("%p") + '</span>')
         self.label.connect( "size-allocate", cb_allocate )
         self.window.present()
-        return True
+        threading.Timer(UPDATE_INTERVAL, self.update_clock).start()
 
     def draw_complete_event(self, window, event):
         self.icon.set_from_pixbuf(window.get_pixbuf())
@@ -242,6 +237,10 @@ class ClockPadding:
         self.icon.set_from_pixbuf(window.get_pixbuf())
        
 if __name__ == "__main__":
+    gobject.threads_init()
+
+    UPDATE_DATE_INTERVAL = set_update_date_interval()
+    
     try:
         user_config_dir = open(os.path.expanduser('~/.stalone_tray_clockrc'), 'r').read().split('\n')
         ICON_SIZE = int(user_config_dir[0].split(':')[1])
@@ -282,7 +281,5 @@ if __name__ == "__main__":
         apptimeampm = ClockTimeAMPM()
         
     paddingright = ClockPadding()
-
-    set_update_date_interval()
-    
+       
     gtk.main()
