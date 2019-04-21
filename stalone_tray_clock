@@ -14,6 +14,7 @@ from Xlib import display
 UPDATE_INTERVAL = 1  # in Seconds
 SHOW_CALENDAR = False
 calendar_window = None
+window_event = 0
 
 def set_update_date_interval():
     now = datetime.datetime.now().strftime("%H:%M:%S")
@@ -80,8 +81,12 @@ def set_show_calendar(gtkobject, data=None):
     SHOW_CALENDAR = False
 
 def calendar_frame_event(window, event):
+    global window_event
     if event.state == gtk.gdk.VISIBILITY_PARTIAL or event.state == gtk.gdk.VISIBILITY_FULLY_OBSCURED:
-        window.destroy()
+        window_event += 1
+        if  window_event == 2:
+            window_event = 0
+            window.destroy()
     
 def save_config():
     with open(os.path.expanduser('~/.stalone_tray_clockrc'), 'w') as f:
