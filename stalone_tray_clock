@@ -125,6 +125,7 @@ class ClockDayOfWeek:
         global UPDATE_DATE_INTERVAL
          
     def update_day_of_week(self):
+        self.icon.set_tooltip(tooltip_text())
         self.dayofweek = day_of_week(datetime.date.today())
         if LANG == 'pt':
             self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
@@ -151,6 +152,7 @@ class ClockDay:
         global UPDATE_DATE_INTERVAL
         
     def update_day(self):
+        self.icon.set_tooltip(tooltip_text())
         UPDATE_DATE_INTERVAL = set_update_date_interval()
         self.now = datetime.datetime.now()
         if LANG == 'pt':
@@ -178,6 +180,7 @@ class ClockMonth:
         global UPDATE_DATE_INTERVAL
        
     def update_month(self):
+        self.icon.set_tooltip(tooltip_text())
         self.month = current_month(datetime.date.today().month)
         self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
                               + '\' font=\'' + FONT + '\'>' + self.month + '</span>')
