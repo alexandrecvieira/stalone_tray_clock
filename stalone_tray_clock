@@ -41,9 +41,11 @@ def tooltip_text():
     month = calendar.month_name[today.month].capitalize()
     year = str(today.year)
     if LANG == 'pt':
-        return dayofweek + ', ' + day + ' de ' + month + ' de ' + year
+        text = '%s, %s de %s de %s' % (dayofweek, day, month, year)
+        return text
     else:
-        return dayofweek + ', ' + day + ' ' + month + ' ' + year
+        text = '%s, %s %s %s' % (dayofweek, day, month, year)
+        return text
 
 def draw_window(label):
     widget = gtk.Layout()
@@ -97,10 +99,14 @@ def calendar_frame_event(window, event):
     
 def save_config():
     with open(os.path.expanduser('~/.stalone_tray_clockrc'), 'w') as f:
-        f.write('%s\n%s\n%s\n%s\n%s\n%s' % ('icon_size' + ':'
-                                                + str(ICON_SIZE), 'bgcolor' + ':' + BGCOLOR, 'fontcolor' + ':'
-                                                + FONTCOLOR, 'fontsize' + ':' + FONTSIZE, 'font' + ':'
-                                                + FONT, 'fontweight' + ':' + FONTWEIGHT))
+        icon_conf = 'icon_size:%s' % (str(ICON_SIZE))
+        bgcolor_conf = 'bgcolor:%s' % (BGCOLOR)
+        fontcolor_conf = 'fontcolor:%s' % (FONTCOLOR)
+        fontsize_conf = 'fontsize:%s' % (FONTSIZE)
+        font_conf = 'font:%s' % (FONT)
+        fontweight_conf = 'fontweight:%s' % (FONTWEIGHT)
+        lang_conf = 'lang:%s' % (LANG)
+        f.write('%s\n%s\n%s\n%s\n%s\n%s\n%s' % (icon_conf, bgcolor_conf, fontcolor_conf, fontsize_conf , font_conf, fontweight_conf, lang_conf))
 
 def cb_allocate(label, allocation):
     label.set_size_request( ICON_SIZE, -1 )
@@ -128,11 +134,11 @@ class ClockDayOfWeek:
         self.icon.set_tooltip(tooltip_text())
         self.dayofweek = day_of_week(datetime.date.today())
         if LANG == 'pt':
-            self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
-                                  + '\' font=\'' + FONT + '\'>' + self.dayofweek + ', </span>')
+            text = '<span color=\'%s\' font_weight=\'%s\' font=\'%s\'>%s,</span>' % (FONTCOLOR, FONTWEIGHT, FONT, self.dayofweek)
+            self.label.set_markup(text)
         else:
-            self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
-                                  + '\' font=\'' + FONT + '\'>' + self.dayofweek + '</span>')
+            text = '<span color=\'%s\' font_weight=\'%s\' font=\'%s\'>%s</span>' % (FONTCOLOR, FONTWEIGHT, FONT, self.dayofweek)
+            self.label.set_markup(text)
         self.label.connect( "size-allocate", cb_allocate )
         self.window.present()
         threading.Timer(UPDATE_DATE_INTERVAL, self.update_day_of_week).start()
@@ -156,11 +162,11 @@ class ClockDay:
         UPDATE_DATE_INTERVAL = set_update_date_interval()
         self.now = datetime.datetime.now()
         if LANG == 'pt':
-            self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
-                                  + '\' font=\'' + FONT + '\'>' + str(self.now.day) + ' de</span>')
+            text = '<span color=\'%s\' font_weight=\'%s\' font=\'%s\'>%s de</span>' % (FONTCOLOR, FONTWEIGHT, FONT, str(self.now.day))
+            self.label.set_markup(text)
         else:
-            self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
-                                  + '\' font=\'' + FONT + '\'>' + str(self.now.day) + ', </span>')
+            text = '<span color=\'%s\' font_weight=\'%s\' font=\'%s\'>%s, </span>' % (FONTCOLOR, FONTWEIGHT, FONT, str(self.now.day))
+            self.label.set_markup(text)
         self.label.connect( "size-allocate", cb_allocate )
         self.window.present()
         threading.Timer(UPDATE_DATE_INTERVAL, self.update_day).start()
@@ -182,8 +188,8 @@ class ClockMonth:
     def update_month(self):
         self.icon.set_tooltip(tooltip_text())
         self.month = current_month(datetime.date.today().month)
-        self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
-                              + '\' font=\'' + FONT + '\'>' + self.month + '</span>')
+        text = '<span color=\'%s\' font_weight=\'%s\' font=\'%s\'>%s</span>' % (FONTCOLOR, FONTWEIGHT, FONT, self.month)
+        self.label.set_markup(text)
         self.label.connect( "size-allocate", cb_allocate )
         self.window.present()
         threading.Timer(UPDATE_DATE_INTERVAL, self.update_month).start()
@@ -206,11 +212,11 @@ class ClockTime:
     def update_clock(self):
         self.now = datetime.datetime.now()
         if LANG == 'pt':
-            self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
-                                  + '\' font=\'' + FONT + '\'>' + self.now.strftime("%H:%M") + '</span>')
+            text = '<span color=\'%s\' font_weight=\'%s\' font=\'%s\'>%s</span>' % (FONTCOLOR, FONTWEIGHT, FONT, self.now.strftime("%H:%M"))
+            self.label.set_markup(text)
         else:
-            self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
-                                  + '\' font=\'' + FONT + '\'>' + self.now.strftime("%I:%M") + '</span>')
+            text = '<span color=\'%s\' font_weight=\'%s\' font=\'%s\'>%s</span>' % (FONTCOLOR, FONTWEIGHT, FONT, self.now.strftime("%I:%M"))
+            self.label.set_markup(text)
         self.label.connect( "size-allocate", cb_allocate )
         self.window.present()
         threading.Timer(UPDATE_INTERVAL, self.update_clock).start()
@@ -233,8 +239,8 @@ class ClockTimeAMPM:
                    
     def update_clock(self):
         self.now = datetime.datetime.now()
-        self.label.set_markup('<span color=\'' + FONTCOLOR + '\' font_weight=\'' + FONTWEIGHT
-                              + '\' font=\'' + FONT + '\'>' + self.now.strftime("%p") + '</span>')
+        text = '<span color=\'%s\' font_weight=\'%s\' font=\'%s\'>%s</span>' % (FONTCOLOR, FONTWEIGHT, FONT, self.now.strftime("%p"))
+        self.label.set_markup(text)
         self.label.connect( "size-allocate", cb_allocate )
         self.window.present()
         threading.Timer(UPDATE_INTERVAL, self.update_clock).start()
