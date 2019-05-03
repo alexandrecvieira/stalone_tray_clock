@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 __appname__ = "Stalone Tray Clock"
-__version__ = "0.1"
+__version__ = "0.5"
 __author__  = "Alexandre C Vieira"
 __license__ = "GNU GPL 2.0 or later"
 
@@ -32,7 +32,18 @@ def day_of_week(date):
     return calendar.day_abbr[date.weekday()].capitalize()
 
 def current_month(monthNumber):
-    return calendar.month_abbr[monthNumber].capitalize() 
+    return calendar.month_abbr[monthNumber].capitalize()
+
+def tooltip_text():
+    today = datetime.date.today()
+    dayofweek = calendar.day_name[today.weekday()].capitalize()
+    day = str(today.day)
+    month = calendar.month_name[today.month].capitalize()
+    year = str(today.year)
+    if LANG == 'pt':
+        return dayofweek + ', ' + day + ' de ' + month + ' de ' + year
+    else:
+        return dayofweek + ', ' + day + ' ' + month + ' ' + year
 
 def draw_window(label):
     widget = gtk.Layout()
@@ -62,10 +73,6 @@ def draw_calendar_window():
     vbox.pack_start(halign1)
     window = gtk.Window()
     window.set_decorated(False)
-    if LANG == 'pt':
-        window.set_title("Calendário")
-    else:
-        window.set_title("Calendar")
     window.set_size_request(250, 200)
     window.set_icon(gtk.icon_theme_get_default().load_icon("calendar", 48, 0))
     mouse = mousepos()
