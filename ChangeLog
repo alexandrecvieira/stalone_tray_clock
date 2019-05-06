@@ -1,4 +1,21 @@
 
+2019-05-06  Alexandre C Vieira <acamargo.vieira@gmail.com>
+
+	* Formatação de string de config
+
+2019-05-03  Alexandre C Vieira <acamargo.vieira@gmail.com>
+
+	* Melhorado o código de formatação das strings
+
+2019-05-02  Alexandre C Vieira <acamargo.vieira@gmail.com>
+
+	* Tooltip
+	* Iniciando tentativa de criar um tooltip
+
+2019-04-20  Alexandre C Vieira <acamargo.vieira@gmail.com>
+
+	* Destruir a janela do calendário no segundo evento, melhorando a usabilidade do calendário
+
 2019-04-15  Alexandre C Vieira <acamargo.vieira@gmail.com>
 
 	* Mudado de gobject para thread  e resolvido bug na contagem dos segundos para as atualizações do dia e mes
