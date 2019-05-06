@@ -283,7 +283,7 @@ if __name__ == "__main__":
         LANG = 'pt' # pt or en
         save_config()
 
-    FONT = FONT + ' ' + FONTSIZE
+    FONT = '%s %s' % (FONT, FONTSIZE)
     
     paddingleft = ClockPadding()
     
