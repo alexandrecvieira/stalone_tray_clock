@@ -1,14 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 __appname__ = "Stalone Tray Clock"
-__version__ = "0.5"
+__version__ = "1.0"
 __author__  = "Alexandre C Vieira"
 __license__ = "GNU GPL 2.0 or later"
 
-import pygtk
-pygtk.require('2.0')
-import gtk, gobject, datetime, calendar, configparser, io, os, locale, threading, time
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk, GObject
+import datetime, calendar, configparser, io, os, locale, threading, time
 from Xlib import display
 
 UPDATE_INTERVAL = 1  # in Seconds
@@ -48,35 +49,37 @@ def tooltip_text():
         return text
 
 def draw_window(label):
-    widget = gtk.Layout()
+    widget = Gtk.Layout()
     if label != None:
         widget.put(label,0,ICON_SIZE / 4)
     widget.show()
-    window = gtk.OffscreenWindow()
+    window = Gtk.OffscreenWindow()
     window.set_default_size(ICON_SIZE, ICON_SIZE)
-    window.set_opacity(0)
+    # window.set_opacity(0)
     window.add(widget)
-    window.show_all()
-    col = gtk.gdk.Color(BGCOLOR)
-    if label == None:
-        window.present()
-    widget.modify_bg(gtk.STATE_NORMAL, col)
+    # window.show_all()
+    col = Gdk.RGBA()
+    col.parse(BGCOLOR)
+    # if label == None:
+    #    window.present()
+    # widget.override_color(Gtk.StateFlags.NORMAL, col)
+    widget.get_style_context().add_class('wclock')
     return window
 
 def draw_calendar_window():
     global SHOW_CALENDAR
     SHOW_CALENDAR = True
-    vbox = gtk.VBox(False, 5)
-    cal = gtk.Calendar()
-    cal.set_display_options(gtk.CALENDAR_SHOW_HEADING | gtk.CALENDAR_SHOW_DAY_NAMES)
-    halign1 = gtk.Alignment(0.5, 0.5, 0, 0)
+    vbox = Gtk.VBox(False, 5)
+    cal = Gtk.Calendar()
+    cal.set_display_options(Gtk.CALENDAR_SHOW_HEADING | Gtk.CALENDAR_SHOW_DAY_NAMES)
+    halign1 = Gtk.Alignment(0.5, 0.5, 0, 0)
     halign1.add(cal)
-    valign = gtk.Alignment(0, 1, 0, 0)
+    valign = Gtk.Alignment(0, 1, 0, 0)
     vbox.pack_start(halign1)
-    window = gtk.Window()
+    window = Gtk.Window()
     window.set_decorated(False)
     window.set_size_request(250, 200)
-    window.set_icon(gtk.icon_theme_get_default().load_icon("calendar", 48, 0))
+    window.set_icon(Gtk.icon_theme_get_default().load_icon("calendar", 48, 0))
     mouse = mousepos()
     window.move(mouse[0] - 125, mouse[1] + 30)
     window.add(vbox)
@@ -85,13 +88,13 @@ def draw_calendar_window():
     window.show_all()
     return window
 
-def set_show_calendar(gtkobject, data=None):
+def set_show_calendar(GtkObject, data=None):
     global SHOW_CALENDAR
     SHOW_CALENDAR = False
 
 def calendar_frame_event(window, event):
     global window_event
-    if event.state == gtk.gdk.VISIBILITY_PARTIAL or event.state == gtk.gdk.VISIBILITY_FULLY_OBSCURED:
+    if event.state == Gdk.VISIBILITY_PARTIAL or event.state == Gdk.VISIBILITY_FULLY_OBSCURED:
         window_event += 1
         if  window_event == 2:
             window_event = 0
@@ -121,17 +124,19 @@ def on_left_click(event):
     
 class ClockDayOfWeek:
     def __init__(self):
-        self.icon = gtk.StatusIcon()
+        self.icon = Gtk.StatusIcon()
+        # self.icon.set_has_tooltip(True)
         self.icon.connect( "activate", on_left_click )
-        self.label = gtk.Label()
-        self.label.set_justify(gtk.JUSTIFY_CENTER)
+        self.label = Gtk.Label()
+        self.label.set_justify(Gtk.Justification.CENTER)
+        self.label.show()
         self.window = draw_window(self.label)
         self.window.connect("damage-event", self.draw_complete_event)
         self.update_day_of_week()
         global UPDATE_DATE_INTERVAL
          
     def update_day_of_week(self):
-        self.icon.set_tooltip(tooltip_text())
+        # self.icon.set_tooltip_text(tooltip_text())
         self.dayofweek = day_of_week(datetime.date.today())
         if LANG == 'pt':
             text = '<span color=\'%s\' font_weight=\'%s\' font=\'%s\'>%s,</span>' % (FONTCOLOR, FONTWEIGHT, FONT, self.dayofweek)
@@ -148,17 +153,18 @@ class ClockDayOfWeek:
 
 class ClockDay:
     def __init__(self):
-        self.icon = gtk.StatusIcon()
+        self.icon = Gtk.StatusIcon()
+        # self.icon.set_has_tooltip(True)
         self.icon.connect( "activate", on_left_click )
-        self.label = gtk.Label()
-        self.label.set_justify(gtk.JUSTIFY_CENTER)
+        self.label = Gtk.Label()
+        self.label.set_justify(Gtk.Justification.CENTER)
         self.window = draw_window(self.label)
         self.window.connect("damage-event", self.draw_complete_event)
         self.update_day()
         global UPDATE_DATE_INTERVAL
         
     def update_day(self):
-        self.icon.set_tooltip(tooltip_text())
+        # self.icon.set_tooltip_text(tooltip_text())
         UPDATE_DATE_INTERVAL = set_update_date_interval()
         self.now = datetime.datetime.now()
         if LANG == 'pt':
@@ -176,17 +182,18 @@ class ClockDay:
 
 class ClockMonth:
     def __init__(self):
-        self.icon = gtk.StatusIcon()
+        self.icon = Gtk.StatusIcon()
+        # self.icon.set_has_tooltip(True)
         self.icon.connect( "activate", on_left_click )
-        self.label = gtk.Label()
-        self.label.set_justify(gtk.JUSTIFY_CENTER)
+        self.label = Gtk.Label()
+        self.label.set_justify(Gtk.Justification.CENTER)
         self.window = draw_window(self.label)
         self.window.connect("damage-event", self.draw_complete_event)
         self.update_month()
         global UPDATE_DATE_INTERVAL
        
     def update_month(self):
-        self.icon.set_tooltip(tooltip_text())
+        # self.icon.set_tooltip_text(tooltip_text())
         self.month = current_month(datetime.date.today().month)
         text = '<span color=\'%s\' font_weight=\'%s\' font=\'%s\'>%s</span>' % (FONTCOLOR, FONTWEIGHT, FONT, self.month)
         self.label.set_markup(text)
@@ -199,13 +206,14 @@ class ClockMonth:
 
 class ClockTime:
     def __init__(self):
-        self.icon = gtk.StatusIcon()
+        self.icon = Gtk.StatusIcon()
         self.icon.connect( "activate", on_left_click )
-        self.label = gtk.Label()
+        self.label = Gtk.Label()
         self.label.set_markup('<span color="white">time</span>')
-        self.label.set_justify(gtk.JUSTIFY_CENTER)
+        self.label.set_justify(Gtk.Justification.CENTER)
         self.window = draw_window(self.label)
         self.window.connect("damage-event", self.draw_complete_event)
+        self.window.show_all()
         self.update_clock()
         global UPDATE_INTERVAL
                          
@@ -226,11 +234,11 @@ class ClockTime:
 
 class ClockTimeAMPM:
     def __init__(self):
-        self.icon = gtk.StatusIcon()
+        self.icon = Gtk.StatusIcon()
         self.icon.connect( "activate", on_left_click )
-        self.label = gtk.Label()
+        self.label = Gtk.Label()
         self.label.set_markup('<span color="white">time</span>')
-        self.label.set_justify(gtk.JUSTIFY_CENTER)
+        self.label.set_justify(Gtk.Justification.CENTER)
         self.window = draw_window(self.label)
         self.window.connect("damage-event", self.draw_complete_event)
         self.update_clock()
@@ -250,7 +258,7 @@ class ClockTimeAMPM:
 
 class ClockPadding:
     def __init__(self):
-        self.icon = gtk.StatusIcon()
+        self.icon = Gtk.StatusIcon()
         window = draw_window(None)
         window.connect("damage-event", self.draw_complete_event)
 
@@ -258,7 +266,7 @@ class ClockPadding:
         self.icon.set_from_pixbuf(window.get_pixbuf())
        
 if __name__ == "__main__":
-    gobject.threads_init()
+    GObject.threads_init()
 
     UPDATE_DATE_INTERVAL = set_update_date_interval()
     
@@ -284,23 +292,29 @@ if __name__ == "__main__":
         save_config()
 
     FONT = '%s %s' % (FONT, FONTSIZE)
+
+    css = b""".wclock { background: %s; }""" % (str.encode(BGCOLOR))
+            
+    provider = Gtk.CssProvider()
+    provider.load_from_data(css)
+    Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
     
     paddingleft = ClockPadding()
     
     if LANG == 'pt':
         appdayofweek = ClockDayOfWeek()
-        appday = ClockDay()
-        appmonth = ClockMonth()
+        # appday = ClockDay()
+        # appmonth = ClockMonth()
     else:
         appdayofweek = ClockDayOfWeek()
         appmonth = ClockMonth()
         appday = ClockDay()
 
-    apptime = ClockTime()
+    # apptime = ClockTime()
 
     if LANG != 'pt':
         apptimeampm = ClockTimeAMPM()
         
     paddingright = ClockPadding()
        
-    gtk.main()
+    Gtk.main()
