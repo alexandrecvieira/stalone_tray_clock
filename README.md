@@ -2,11 +2,11 @@
 
 Relógio muito simples feito apenas pra suprir a necessidade do usuário saber a hora e ter um calendário simples à disposição
 
-![stalone_tray_clock](stalone_tray_clock.png)
+![stalone_tray_clock](http://alexandrecvieira.droppages.com/images/stalone_tray_clock/stalone_tray_clock.png)
 
 Ao clicar no relógio aparece o calendário
 
-![stalone_tray_clock_calendar](http://alexandrecvieira.droppages.com/images/stalonetray_clock_calendar2.png)
+![stalone_tray_clock_calendar](http://alexandrecvieira.droppages.com/images/stalone_tray_clock/stalonetray_clock_calendar2.png)
 
 #### Requerimentos
 
