@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 __appname__ = "Stalone Tray Clock"
-__version__ = "0.5"
+__version__ = "0.10"
 __author__  = "Alexandre C Vieira"
 __license__ = "GNU GPL 2.0 or later"
 
@@ -14,7 +14,6 @@ from Xlib import display
 UPDATE_INTERVAL = 1  # in Seconds
 SHOW_CALENDAR = False
 calendar_window = None
-window_event = 0
 
 def set_update_date_interval():
     now = datetime.datetime.now().strftime("%H:%M:%S")
@@ -81,7 +80,7 @@ def draw_calendar_window():
     window.move(mouse[0] - 125, mouse[1] + 30)
     window.add(vbox)
     window.connect("destroy", set_show_calendar)
-    window.connect("visibility-notify-event", calendar_frame_event)
+    window.connect("focus-out-event", calendar_frame_event)
     window.show_all()
     return window
 
@@ -90,12 +89,7 @@ def set_show_calendar(gtkobject, data=None):
     SHOW_CALENDAR = False
 
 def calendar_frame_event(window, event):
-    global window_event
-    if event.state == gtk.gdk.VISIBILITY_PARTIAL or event.state == gtk.gdk.VISIBILITY_FULLY_OBSCURED:
-        window_event += 1
-        if  window_event == 2:
-            window_event = 0
-            window.destroy()
+    window.destroy()
     
 def save_config():
     with open(os.path.expanduser('~/.stalone_tray_clockrc'), 'w') as f:
