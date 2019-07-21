@@ -1,4 +1,8 @@
 
+2019-07-21  Alexandre C Vieira <acamargo.vieira@gmail.com>
+
+	* stalone_tray_clock (draw_calendar_window): focus-out-event stalone_tray_clock v0.10
+
 2019-05-06  Alexandre C Vieira <acamargo.vieira@gmail.com>
 
 	* Formatação de string de config
